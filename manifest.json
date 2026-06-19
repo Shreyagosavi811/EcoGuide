@@ -1,0 +1,25 @@
+{
+  "name": "EcoGuide",
+  "short_name": "EcoGuide",
+  "description": "Personal Carbon Footprint & Sustainability Assistant",
+  "display": "standalone",
+  "start_url": "./index.html",
+  "scope": "./",
+  "theme_color": "#2ea043",
+  "background_color": "#0d1117",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

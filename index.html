@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'">
+  <title>EcoGuide — Your Adaptive Carbon Assistant</title>
+  <meta name="description" content="EcoGuide is a conversational carbon assistant that helps you understand, track, and reduce your personal carbon footprint through personalized insights and action plans.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2ea043">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+</head>
+<body>
+
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <div id="route-announcer" class="visually-hidden" aria-live="assertive" aria-atomic="true"></div>
+
+  <nav class="app-nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-brand" aria-label="EcoGuide home">
+      <span aria-hidden="true">🌿</span>
+      <span class="nav-title">EcoGuide</span>
+    </div>
+    <ul class="nav-links" role="list" id="nav-links">
+      <li role="listitem"><button class="nav-btn active" data-view="conversation" aria-current="page">Assistant</button></li>
+      <li role="listitem"><button class="nav-btn" data-view="dashboard">Dashboard</button></li>
+      <li role="listitem"><button class="nav-btn" data-view="recommendations">Tips</button></li>
+      <li role="listitem"><button class="nav-btn" data-view="planner">Plan</button></li>
+      <li role="listitem"><button class="nav-btn" data-view="simulator">Simulator</button></li>
+      <li role="listitem"><button class="nav-btn" data-view="history">Progress</button></li>
+      <li role="listitem"><button class="nav-btn" data-view="tests">Tests</button></li>
+    </ul>
+    <button id="install-app-btn" aria-label="Install EcoGuide App" hidden>
+      Install EcoGuide
+    </button>
+    <button id="theme-toggle-btn" aria-label="Toggle Dark Theme">
+      ☀️ Light
+    </button>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Toggle navigation menu">
+      <span aria-hidden="true">☰</span>
+    </button>
+  </nav>
+
+  <main id="main-content" role="main" tabindex="-1">
+
+    <!-- ── CONVERSATION VIEW ─────────────────────────────────────── -->
+    <section id="view-conversation" class="view active" aria-label="EcoGuide Conversation Assistant">
+      <div class="conversation-container">
+
+        <!-- Header -->
+        <header class="conversation-header">
+          <div class="assistant-avatar" aria-hidden="true">🌿</div>
+          <div class="assistant-info">
+            <h1 class="assistant-name">EcoGuide</h1>
+            <span class="assistant-status">Your Adaptive Carbon Assistant</span>
+          </div>
+          <button class="conv-restart-btn" id="conv-restart-btn"
+                  aria-label="Restart conversation" title="Restart"
+                  style="display:none">
+            ↺ Restart
+          </button>
+        </header>
+
+        <!-- Progress bar -->
+        <div class="conv-progress" id="conv-progress" role="progressbar"
+             aria-label="Conversation progress"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="conv-progress-fill" id="conv-progress-fill"></div>
+        </div>
+        <div class="conv-progress-label" id="conv-progress-label"
+             aria-live="polite" aria-atomic="true"></div>
+
+        <!-- Messages log -->
+        <div class="conversation-messages"
+             id="conversation-messages"
+             role="log"
+             aria-live="polite"
+             aria-atomic="false"
+             aria-label="Conversation messages"
+             aria-relevant="additions">
+        </div>
+
+        <!-- Input area -->
+        <div class="conversation-input-area"
+             id="conversation-input-area"
+             aria-label="Response options">
+        </div>
+
+      </div>
+      <!-- Demo Mode & Persona Selector Sidebar -->
+      <div class="demo-persona-container">
+        <div class="demo-controls-card">
+          <button id="run-demo-btn" class="btn-demo" aria-label="Run Demo Assessment">
+            🎬 Run Demo Assessment
+          </button>
+        </div>
+        <div class="persona-selector-card">
+          <h2 class="persona-title">💡 Quick Persona Selector</h2>
+          <p class="persona-subtitle">Skip onboarding by instantly loading a pre-configured carbon profile.</p>
+          <div class="persona-grid" role="group" aria-label="Persona Selector">
+            <button class="persona-card" onclick="loadPersonaProfile('champion')" aria-label="Climate Champion Persona">
+              <span class="persona-icon">🏆</span>
+              <span class="persona-name">Climate Champion</span>
+              <span class="persona-desc">Low transport, vegan, highly efficient home</span>
+            </button>
+            <button class="persona-card" onclick="loadPersonaProfile('average_india')" aria-label="Average Indian Household Persona">
+              <span class="persona-icon">🇮🇳</span>
+              <span class="persona-name">Average Indian</span>
+              <span class="persona-desc">Standard grid electricity, mixed diet, moderate travel</span>
+            </button>
+            <button class="persona-card" onclick="loadPersonaProfile('student')" aria-label="Student in Hostel Persona">
+              <span class="persona-icon">🎒</span>
+              <span class="persona-name">Hostel Student</span>
+              <span class="persona-desc">Minimal energy, public transit, low shopping</span>
+            </button>
+            <button class="persona-card" onclick="loadPersonaProfile('traveler')" aria-label="Frequent Traveler Persona">
+              <span class="persona-icon">✈️</span>
+              <span class="persona-name">Frequent Traveler</span>
+              <span class="persona-desc">High travel, meat heavy, large shopping footprint</span>
+            </button>
+            <button class="persona-card" onclick="loadPersonaProfile('beginner')" aria-label="Eco Beginner Persona">
+              <span class="persona-icon">🌱</span>
+              <span class="persona-name">Eco Beginner</span>
+              <span class="persona-desc">High electricity, car commuter, meat eater</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DASHBOARD VIEW ────────────────────────────────────────── -->
+    <section id="view-dashboard" class="view" aria-label="Carbon Footprint Dashboard" hidden>
+      <div class="view-container">
+        <h2 class="view-title">Your Carbon Dashboard</h2>
+        <div id="grid-factor-badge" class="grid-badge" aria-live="polite"></div>
+
+        <!-- Judge Overview Card -->
+        <div class="card judge-card" role="region" aria-label="Why EcoGuide Is Different">
+          <h3 class="judge-card-title">💡 Why EcoGuide Is Different</h3>
+          <div class="judge-features-grid">
+            <div class="judge-feature-item">✓ Conversational Assessment</div>
+            <div class="judge-feature-item">✓ Personalized Recommendations</div>
+            <div class="judge-feature-item">✓ Behavioral Learning Engine</div>
+            <div class="judge-feature-item">✓ What-If Simulator</div>
+            <div class="judge-feature-item">✓ 4-Week Action Plan</div>
+            <div class="judge-feature-item">✓ Privacy-First Architecture</div>
+            <div class="judge-feature-item">✓ Offline Support</div>
+            <div class="judge-feature-item">✓ Scientific Emission Factors</div>
+          </div>
+          <p class="judge-tech-stack">Built using Vanilla JavaScript, Chart.js, Local Storage, and PWA technologies.</p>
+        </div>
+
+        <div id="dashboard-no-data" class="no-data-message">
+          <span class="no-data-icon" aria-hidden="true">📊</span>
+          <p>Complete the conversation to see your personalised dashboard.</p>
+          <button class="btn-primary" data-nav="conversation">Start with EcoGuide →</button>
+        </div>
+        <div id="dashboard-data" hidden>
+          <div class="dashboard-grid">
+            <div class="card score-card" role="region" aria-label="EcoScore">
+              <h3 class="card-title">🌿 Your EcoScore</h3>
+              <div class="ecoscore-ring-container">
+                <svg class="ecoscore-ring" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                  <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                  <circle class="ring-fill" id="ecoscore-ring-fill" cx="60" cy="60" r="50"/>
+                </svg>
+                <div class="ecoscore-value" aria-live="polite" aria-label="EcoScore value">
+                  <span id="ecoscore-number" class="score-number">--</span>
+                  <span class="score-label">/100</span>
+                </div>
+              </div>
+              <div id="score-breakdown" class="score-breakdown" role="list" aria-label="Score by category"></div>
+            </div>
+            <div class="card chart-card" role="region" aria-label="Emissions breakdown by category">
+              <h3 class="card-title">📊 Emissions Breakdown</h3>
+              <canvas id="breakdown-chart" aria-label="Doughnut chart of emissions by category" role="img"></canvas>
+              <div id="breakdown-legend" class="chart-legend" role="list" aria-label="Chart legend"></div>
+            </div>
+            <!-- Virtual Forest Visualizer Dashboard Card -->
+            <div class="card" id="virtual-forest-dashboard" role="region" aria-label="Virtual Forest Visualizer"></div>
+            <div class="card" id="india-comparison" role="region" aria-label="Comparison with India and global averages"></div>
+            <div class="card" id="goal-progress" role="region" aria-label="Goal progress tracker"></div>
+          </div>
+          <div class="card story-card" id="carbon-story" role="region" aria-label="Your carbon footprint story">
+            <h3 class="card-title">📖 Your Carbon Story</h3>
+            <div id="story-content" class="story-text" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── RECOMMENDATIONS VIEW ──────────────────────────────────── -->
+    <section id="view-recommendations" class="view" aria-label="Personalised Recommendations" hidden>
+      <div class="view-container">
+        <h2 class="view-title">Smart Recommendations</h2>
+        <div id="eco-persona-badge" class="persona-badge" role="status" aria-live="polite" aria-atomic="true"></div>
+        <div id="recs-no-data" class="no-data-message">
+          <span class="no-data-icon" aria-hidden="true">💡</span>
+          <p>Complete the conversation to get personalised recommendations.</p>
+          <button class="btn-primary" data-nav="conversation">Start with EcoGuide →</button>
+        </div>
+        <div id="recommendations-list" class="recommendations-list" hidden role="list" aria-label="Recommendations"></div>
+      </div>
+    </section>
+
+    <!-- ── PLANNER VIEW ───────────────────────────────────────────── -->
+    <section id="view-planner" class="view" aria-label="4-Week Action Plan" hidden>
+      <div class="view-container">
+        <h2 class="view-title">Your 4-Week Action Plan</h2>
+        <div id="plan-no-data" class="no-data-message">
+          <span class="no-data-icon" aria-hidden="true">📅</span>
+          <p>Complete the conversation to generate your action plan.</p>
+          <button class="btn-primary" data-nav="conversation">Start with EcoGuide →</button>
+        </div>
+        <div id="plan-data" hidden></div>
+      </div>
+    </section>
+
+    <!-- ── SIMULATOR VIEW ────────────────────────────────────────── -->
+    <section id="view-simulator" class="view" aria-label="What-If Carbon Simulator" hidden>
+      <div class="view-container">
+        <h2 class="view-title">🎛️ What-If Simulator</h2>
+        <p class="view-subtitle">Drag the sliders to explore how lifestyle changes affect your footprint.</p>
+        <div id="sim-no-data" class="no-data-message">
+          <span class="no-data-icon" aria-hidden="true">🎛️</span>
+          <p>Complete the conversation to use the simulator.</p>
+          <button class="btn-primary" data-nav="conversation">Start with EcoGuide →</button>
+        </div>
+        <div id="sim-data" class="simulator-layout" hidden>
+          <div class="slider-panel" role="group" aria-label="Lifestyle adjustment sliders">
+            <div id="simulator-sliders"></div>
+          </div>
+          <div class="result-panel">
+            <div class="sim-result-card" role="region" aria-label="Simulation results" aria-live="polite" aria-atomic="false">
+              <div class="sim-metric">
+                <span class="sim-label">Current</span>
+                <span class="sim-value" id="sim-current">-- t/year</span>
+              </div>
+              <div class="sim-metric highlight">
+                <span class="sim-label">Simulated</span>
+                <span class="sim-value" id="sim-predicted">-- t/year</span>
+              </div>
+              <div class="sim-metric">
+                <span class="sim-label">CO₂ Reduction</span>
+                <span class="sim-value green" id="sim-co2-delta">-- kg/year</span>
+              </div>
+              <div class="sim-metric">
+                <span class="sim-label">Money Saved</span>
+                <span class="sim-value green" id="sim-money-delta">₹-- /year</span>
+              </div>
+              <div class="sim-target" id="sim-target-status" aria-live="polite"></div>
+            </div>
+            <button class="btn-secondary" id="sim-to-plan">→ Turn into Action Plan</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HISTORY VIEW ───────────────────────────────────────────── -->
+    <section id="view-history" class="view" aria-label="Progress History" hidden>
+      <div class="view-container">
+        <h2 class="view-title">📈 Your Progress</h2>
+        <div id="history-no-data" class="no-data-message" hidden>
+          <span class="no-data-icon" aria-hidden="true">📈</span>
+          <p>No history yet. Complete your first assessment to start tracking.</p>
+          <button class="btn-primary" data-nav="conversation">Start with EcoGuide →</button>
+        </div>
+        <div id="history-data">
+          <!-- Achievements Card -->
+          <div class="card badge-card" role="region" aria-label="Achievements Gallery">
+            <h3 class="card-title">🏆 Your Achievements</h3>
+            <div id="achievements-gallery" class="badge-gallery" role="list" aria-label="Achievements Gallery"></div>
+          </div>
+
+          <div id="history-cards"></div>
+          <div class="card chart-card">
+            <h3 class="card-title">Footprint Trend</h3>
+            <canvas id="trend-chart" aria-label="Line chart showing monthly carbon footprint trend" role="img"></canvas>
+          </div>
+          <div class="export-section">
+            <button class="btn-secondary" id="export-csv-btn" aria-label="Download CSV sustainability report">⬇️ Export CSV</button>
+            <button class="btn-secondary" id="export-pdf-btn" aria-label="Print PDF sustainability report">🖨️ Print Report</button>
+            <button class="btn-secondary" id="print-cert-btn" aria-label="Generate and Print Climate Achievement Certificate">🏆 Print Certificate</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TESTS VIEW ─────────────────────────────────────────────── -->
+    <section id="view-tests" class="view" aria-label="Unit Test Suite" hidden>
+      <div class="view-container">
+        <h2 class="view-title">🧪 Test Suite</h2>
+        <p class="view-subtitle">Browser-based validation of core calculation and logic modules.</p>
+        <div id="test-controls" class="test-controls">
+          <button class="btn-primary" id="run-tests-btn">▶ Run All Tests</button>
+          <span class="test-summary" id="test-summary" aria-live="polite" aria-atomic="true"></span>
+        </div>
+        <div id="test-results" role="log" aria-live="polite" aria-atomic="false" aria-label="Test results" class="test-results"></div>
+      </div>
+    </section>
+
+  <!-- Printable Certificate Area -->
+  <div id="certificate-print-area" class="certificate-container" style="display: none;">
+    <div class="cert-border">
+      <div class="cert-body">
+        <span class="cert-badge" aria-hidden="true">🌿</span>
+        <h1 class="cert-title">EcoGuide Climate Impact Certificate</h1>
+        <p class="cert-subtitle">This certificate is proudly presented to the user of EcoGuide</p>
+        
+        <div class="cert-divider"></div>
+        
+        <div class="cert-details">
+          <div class="cert-detail-row">
+            <span class="cert-label">User Profile Type:</span>
+            <span class="cert-value" id="cert-profile-type">--</span>
+          </div>
+          <div class="cert-detail-row">
+            <span class="cert-label">EcoScore:</span>
+            <span class="cert-value" id="cert-ecoscore">--</span>
+          </div>
+          <div class="cert-detail-row">
+            <span class="cert-label">Estimated Annual CO₂:</span>
+            <span class="cert-value" id="cert-annual-co2">--</span>
+          </div>
+          <div class="cert-detail-row">
+            <span class="cert-label">Potential Annual CO₂ Savings:</span>
+            <span class="cert-value" id="cert-annual-savings">--</span>
+          </div>
+          <div class="cert-detail-row">
+            <span class="cert-label">Tree Absorption Equivalent:</span>
+            <span class="cert-value" id="cert-tree-equivalent">--</span>
+          </div>
+        </div>
+        
+        <div class="cert-divider"></div>
+        
+        <p class="cert-summary" id="cert-achievement-summary">
+          Thank you for taking meaningful steps towards reducing your carbon footprint and contributing to a sustainable future.
+        </p>
+        
+        <div class="cert-footer">
+          <div class="cert-date-col">
+            <span class="cert-label">Date Generated</span>
+            <span class="cert-value" id="cert-date-generated">--</span>
+          </div>
+          <div class="cert-sig-col">
+            <span class="cert-sig-line"></span>
+            <span class="cert-label">EcoGuide Sustainability Team</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="js/benchmarks.js"></script>
+  <script src="js/calculator.js"></script>
+  <script src="js/profiler.js"></script>
+  <script src="js/recommender.js"></script>
+  <script src="js/storyteller.js"></script>
+  <script src="js/planning.js"></script>
+  <script src="js/simulator.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/report.js"></script>
+  <script src="js/forest.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/tests.js"></script>
+  <script src="js/conversation.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
