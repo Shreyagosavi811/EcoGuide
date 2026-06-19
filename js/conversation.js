@@ -585,6 +585,41 @@ const Conversation = (() => {
     }, _isDemo ? 150 : 800);
   }
 
+  function _appendHeroBanner() {
+    const log = document.getElementById('conversation-messages');
+    if (!log) return;
+    
+    // Check if banner already exists
+    if (document.getElementById('onboarding-hero-banner')) return;
+
+    const banner = document.createElement('div');
+    banner.className = 'onboarding-hero-banner';
+    banner.id = 'onboarding-hero-banner';
+
+    const img = document.createElement('img');
+    img.src = 'hero.jpg';
+    img.alt = 'EcoGuide Challenge - Carbon Footprint Aerial View of Forest';
+    img.className = 'hero-banner-img';
+
+    const content = document.createElement('div');
+    content.className = 'hero-banner-content';
+
+    const title = document.createElement('h2');
+    title.className = 'hero-banner-title';
+    title.textContent = 'EcoGuide Sustainability Challenge';
+
+    const text = document.createElement('p');
+    text.className = 'hero-banner-text';
+    text.textContent = 'Track, simulate, and reduce your personal carbon footprint. Welcome to the official challenge visualizer.';
+
+    content.appendChild(title);
+    content.appendChild(text);
+    banner.appendChild(img);
+    banner.appendChild(content);
+    
+    log.appendChild(banner);
+  }
+
   // ── RESTART ────────────────────────────────────────────────────────────────
 
   /**
@@ -609,6 +644,7 @@ const Conversation = (() => {
 
     const log = document.getElementById('conversation-messages');
     if (log) log.innerHTML = '';
+    _appendHeroBanner();
     _updateProgress();
     _showNextStep();
   }
@@ -621,6 +657,7 @@ const Conversation = (() => {
     _clearAllTimers();
     _visitedSteps      = 0;
     _totalVisibleSteps = _visibleStepCount();
+    _appendHeroBanner();
     _updateProgress();
     _showNextStep();
   }
