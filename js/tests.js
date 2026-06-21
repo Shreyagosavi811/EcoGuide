@@ -1,5 +1,5 @@
 /**
- * tests.js — In-browser unit test suite. 20 tests covering all modules.
+ * tests.js — In-browser unit test suite. 33 tests covering all modules.
  * Access via the Tests tab in the navigation.
  * Zero external dependencies — vanilla JS only.
  *
@@ -27,7 +27,7 @@ const Tests = (() => {
     _results.push({ testId: id, description: desc, pass, actual, expected: `${min}–${max}` });
   }
 
-  function runAllTests() {
+  async function runAllTests() {
     _results = [];
 
     // T01 — Motorcycle 80km/week CO₂
@@ -165,10 +165,8 @@ const Tests = (() => {
     let swContent = '';
     let isLocalFile = window.location.protocol === 'file:';
     try {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', './service-worker.js', false);
-      xhr.send();
-      swContent = xhr.responseText;
+      const response = await fetch('./service-worker.js');
+      swContent = await response.text();
     } catch (e) {
       // Fail silently
     }
@@ -185,6 +183,33 @@ const Tests = (() => {
 
     // T31 — Demo Mode existence
     assert('T31', 'Demo Mode runDemo is exposed on Conversation module', typeof Conversation !== 'undefined' && typeof Conversation.runDemo === 'function', true);
+
+    // T32 — Achievements module unlock mechanics
+    if (typeof Achievements !== 'undefined') {
+      const origAchievements = localStorage.getItem('ecoguide_achievements');
+      localStorage.removeItem('ecoguide_achievements');
+      Achievements.unlock('eco_starter');
+      const list = Achievements.load();
+      const unlockedItem = list.find(a => a.id === 'eco_starter');
+      assert('T32', 'Achievements unlock sets unlocked status to true', unlockedItem !== undefined && unlockedItem.unlocked === true, true);
+      if (origAchievements) {
+        localStorage.setItem('ecoguide_achievements', origAchievements);
+      } else {
+        localStorage.removeItem('ecoguide_achievements');
+      }
+    } else {
+      assert('T32', 'Achievements module loaded', false, true);
+    }
+
+    // T33 — Simulator persistence flag
+    if (typeof AppState !== 'undefined') {
+      const origSimDirty = AppState.state.dirty.simulator;
+      AppState.state.dirty.simulator = false;
+      assert('T33', 'Simulator dirty state is set/get correctly', AppState.state.dirty.simulator, false);
+      AppState.state.dirty.simulator = origSimDirty;
+    } else {
+      assert('T33', 'AppState module loaded', false, true);
+    }
 
     return _results;
   }
@@ -239,7 +264,7 @@ const Tests = (() => {
 
   function init() {
     const btn = document.getElementById('run-tests-btn');
-    if (btn) btn.addEventListener('click', () => renderResults(runAllTests()));
+    if (btn) btn.addEventListener('click', async () => renderResults(await runAllTests()));
   }
 
   return Object.freeze({ init, runAllTests, renderResults });

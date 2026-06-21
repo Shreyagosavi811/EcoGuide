@@ -174,6 +174,7 @@ const Simulator = (() => {
       input.addEventListener('input', () => {
         valueSpan.textContent = `${input.value} ${cfg.unit}`;
         input.setAttribute('aria-valuenow', input.value);
+        input.setAttribute('aria-label', `${cfg.label}: ${input.value} ${cfg.unit}`);
         clearTimeout(_debounceTimer);
         _debounceTimer = setTimeout(_recalculate, 150);
 

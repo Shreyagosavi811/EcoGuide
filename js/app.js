@@ -111,32 +111,23 @@ const AppState = (() => {
    * Triggers full analysis pipeline and navigates to dashboard.
    * @param {Object} userData - Collected user data
    */
-  function onConversationComplete(userData) {
+  function _processAssessmentData(userData, profile) {
     state.userData = userData;
     state.goal     = userData.goal;
 
-    // Show restart button now that conversation is done
     const restartBtn = document.getElementById('conv-restart-btn');
     if (restartBtn) restartBtn.style.display = 'block';
 
-    // Compute emissions
     state.breakdown = Calculator.computeBreakdown(userData);
 
-    // Load behavioral profile
-    const profile = Profiler.loadProfile();
-
-    // Generate ranked recommendations
     state.recommendations = Recommender.generateRecommendations(
       userData, state.breakdown, state.goal, profile
     );
 
-    // Generate action plan
     state.plan = Planning.generateActionPlan(state.recommendations, userData.persona, state.goal);
 
-    // Compute EcoScore
     state.ecoScore = Analytics.computeEcoScore(state.breakdown);
 
-    // Save progress snapshot
     const now = new Date();
     Profiler.addProgressSnapshot({
       month:       now.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }),
@@ -145,17 +136,14 @@ const AppState = (() => {
       topCategory: _dominantCategory(state.breakdown),
     });
 
-    // Mark views as dirty
     state.dirty.dashboard       = true;
     state.dirty.recommendations = true;
     state.dirty.planner         = true;
     state.dirty.history         = true;
     state.dirty.simulator       = true;
 
-    // Gamification: Unlock assessments achievement
     if (typeof Achievements !== 'undefined') {
       Achievements.unlock('first_assessment');
-      // If plan has significant savings, unlock rewards
       const totals = Planning.planTotalSavings(state.plan || []);
       if (totals.co2 >= 500) {
         Achievements.unlock('climate_champion');
@@ -163,17 +151,16 @@ const AppState = (() => {
         Achievements.unlock('carbon_reducer');
       }
 
-      // Unlock new micro achievements
       if (userData.diet === 'vegetarian' || userData.diet === 'vegan') {
         Achievements.unlock('green_diet');
       }
-      if (userData.energy.electricity_kwh <= 80) {
+      if (userData.energy && userData.energy.electricity_kwh <= 80) {
         Achievements.unlock('clean_energy');
       }
-      if (userData.transport.mode === 'walk_cycle' || userData.transport.mode === 'public_transit') {
+      if (userData.transport && (userData.transport.mode === 'walk_cycle' || userData.transport.mode === 'public_transit')) {
         Achievements.unlock('commute_hero');
       }
-      if (userData.shopping.clothing_per_month <= 1 && userData.shopping.electronics_per_year <= 1) {
+      if (userData.shopping && userData.shopping.clothing_per_month <= 1 && userData.shopping.electronics_per_year <= 1) {
         Achievements.unlock('smart_shopper');
       }
       const acceptedRecs = (state.recommendations || []).filter(r => r.accepted);
@@ -182,6 +169,16 @@ const AppState = (() => {
         Achievements.unlock('forest_grower');
       }
     }
+  }
+
+  /**
+   * Called by conversation.js when the dialogue is complete.
+   * Triggers full analysis pipeline and navigates to dashboard.
+   * @param {Object} userData - Collected user data
+   */
+  function onConversationComplete(userData) {
+    const profile = Profiler.loadProfile();
+    _processAssessmentData(userData, profile);
 
     // Show result in conversation
     _appendAnalysisResult();
@@ -695,13 +692,6 @@ const AppState = (() => {
     };
 
     const userData = personas[personaKey] || personas.beginner;
-    state.userData = userData;
-    state.goal = userData.goal;
-
-    const restartBtn = document.getElementById('conv-restart-btn');
-    if (restartBtn) restartBtn.style.display = 'block';
-
-    state.breakdown = Calculator.computeBreakdown(userData);
 
     const profile = Profiler.loadProfile();
     if (personaKey === 'champion') {
@@ -720,35 +710,7 @@ const AppState = (() => {
     }
     Profiler.saveProfile(profile);
 
-    state.recommendations = Recommender.generateRecommendations(userData, state.breakdown, state.goal, profile);
-    state.plan = Planning.generateActionPlan(state.recommendations, userData.persona, state.goal);
-    state.ecoScore = Analytics.computeEcoScore(state.breakdown);
-
-    // Save snapshot
-    const now = new Date();
-    Profiler.addProgressSnapshot({
-      month: now.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }),
-      total: state.breakdown.total,
-      ecoScore: state.ecoScore.overall,
-      topCategory: _dominantCategory(state.breakdown),
-    });
-
-    state.dirty.dashboard       = true;
-    state.dirty.recommendations = true;
-    state.dirty.planner         = true;
-    state.dirty.history         = true;
-    state.dirty.simulator       = true;
-
-    // Gamification: Unlock achievements
-    if (typeof Achievements !== 'undefined') {
-      Achievements.unlock('first_assessment');
-      const totals = Planning.planTotalSavings(state.plan || []);
-      if (totals.co2 >= 500) {
-        Achievements.unlock('climate_champion');
-      } else if (totals.co2 >= 100) {
-        Achievements.unlock('carbon_reducer');
-      }
-    }
+    _processAssessmentData(userData, profile);
 
     navigateTo('dashboard');
   }
