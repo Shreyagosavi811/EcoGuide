@@ -39,13 +39,13 @@ const AppState = (() => {
   function showOnboardingLanding() {
     _show('conversation-landing');
     const chatContainer = document.getElementById('conversation-chat-container');
-    if (chatContainer) chatContainer.style.display = 'none';
+    if (chatContainer) chatContainer.hidden = true;
   }
 
   function showChatContainer() {
     _hide('conversation-landing');
     const chatContainer = document.getElementById('conversation-chat-container');
-    if (chatContainer) chatContainer.style.display = 'flex';
+    if (chatContainer) chatContainer.hidden = false;
   }
 
   function navigateTo(viewName) {
@@ -116,7 +116,7 @@ const AppState = (() => {
     state.goal     = userData.goal;
 
     const restartBtn = document.getElementById('conv-restart-btn');
-    if (restartBtn) restartBtn.style.display = 'block';
+    if (restartBtn) restartBtn.hidden = false;
 
     state.breakdown = Calculator.computeBreakdown(userData);
 
@@ -484,8 +484,7 @@ const AppState = (() => {
           const text = document.createElement('span');
           text.textContent = action.title;
           if (action.accepted) {
-            text.style.textDecoration = 'line-through';
-            text.style.opacity = '0.6';
+            text.classList.add('action-completed');
           }
           
           li.appendChild(icon);
@@ -635,9 +634,9 @@ const AppState = (() => {
     }
     document.getElementById('cert-achievement-summary').textContent = summaryText;
 
-    certArea.style.display = 'block';
+    certArea.hidden = false;
     window.print();
-    certArea.style.display = 'none';
+    certArea.hidden = true;
   }
 
   // ── QUICK PERSONA SELECTOR ─────────────────────────────────────────────────
@@ -761,8 +760,6 @@ const AppState = (() => {
   // ── INITIALISATION ──────────────────────────────────────────────────────────
 
   function init() {
-    // Expose Persona Loader globally for HTML onclick hooks
-    window.loadPersonaProfile = loadPersonaProfile;
 
     // Theme Toggle Handler (Light by default, manual Dark toggle)
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
@@ -808,11 +805,10 @@ const AppState = (() => {
       e.preventDefault();
       deferredPrompt = e;
       if (installBtn) {
-        installBtn.removeAttribute('hidden');
-        installBtn.style.display = 'inline-block';
+        installBtn.hidden = false;
       }
       if (heroInstallBtn) {
-        heroInstallBtn.style.display = 'inline-block';
+        heroInstallBtn.hidden = false;
       }
     });
 
@@ -822,11 +818,10 @@ const AppState = (() => {
         deferredPrompt.userChoice.then(() => {
           deferredPrompt = null;
           if (installBtn) {
-            installBtn.setAttribute('hidden', '');
-            installBtn.style.display = 'none';
+            installBtn.hidden = true;
           }
           if (heroInstallBtn) {
-            heroInstallBtn.style.display = 'none';
+            heroInstallBtn.hidden = true;
           }
         });
       }
@@ -841,11 +836,10 @@ const AppState = (() => {
 
     window.addEventListener('appinstalled', () => {
       if (installBtn) {
-        installBtn.setAttribute('hidden', '');
-        installBtn.style.display = 'none';
+        installBtn.hidden = true;
       }
       if (heroInstallBtn) {
-        heroInstallBtn.style.display = 'none';
+        heroInstallBtn.hidden = true;
       }
     });
 
@@ -863,7 +857,7 @@ const AppState = (() => {
     const restartBtn = document.getElementById('conv-restart-btn');
     if (restartBtn) {
       restartBtn.addEventListener('click', () => {
-        restartBtn.style.display = 'none';
+        restartBtn.hidden = true;
         resetState();
         Conversation.restart();
       });
@@ -877,6 +871,13 @@ const AppState = (() => {
         Conversation.runDemo();
       });
     }
+
+    // Persona buttons delegation
+    document.querySelectorAll('[data-persona]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        loadPersonaProfile(btn.dataset.persona);
+      });
+    });
 
     // Hero Section buttons
     const heroStartBtn = document.getElementById('hero-start-btn');
@@ -969,5 +970,5 @@ const AppState = (() => {
     init();
   }
 
-  return Object.freeze({ navigateTo, onConversationComplete, state, loadPersonaProfile });
+  return Object.freeze({ navigateTo, onConversationComplete, state });
 })();

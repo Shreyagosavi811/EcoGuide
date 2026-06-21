@@ -74,7 +74,7 @@ carbon-footprint-app/
 │   ├── report.js       # CSV sanitizer/export & browser-native PDF print controller
 │   ├── forest.js       # Virtual Forest visual impact grid controller
 │   ├── achievements.js # Gamified achievement system (persistence & toasts)
-│   ├── tests.js        # Self-diagnostic unit testing framework (31 core tests)
+│   ├── tests.js        # Self-diagnostic unit testing framework (37 core tests)
 │   ├── conversation.js # Dialogue state machine, input rendering, and validation log
 │   └── app.js          # App lifecycle initializer, view router, and state management
 ```
@@ -168,7 +168,7 @@ Audited against **WCAG 2.1 AA Compliance** rules:
 
 EcoGuide integrates an in-browser diagnostic test runner:
 
-*   **31 Automated Unit Tests**: Assertions span `calculator.js`, `profiler.js`, `recommender.js`, `storyteller.js`, and PWA modules.
+*   **37 automated Unit Tests**: Assertions span `calculator.js`, `profiler.js`, `recommender.js`, `storyteller.js`, and PWA modules.
 *   **Logical Execution Checks**: Covers zero/negative input sanitization, formula injection mitigation, and weighted recommendation sorting logic.
 *   **Grid Calculations & PWA Tests**: Verifies regional Indian grid electricity factors and service worker caching setup.
 *   **Interactive Test Log**: Displays diagnostic results (pass/fail status with details) directly under the **Tests** tab.
@@ -209,7 +209,7 @@ Start-Process "index.html"
 To run the self-diagnostic test suite:
 1. Open the application.
 2. Click the **Tests** tab in the navigation menu.
-3. Click **Run All Tests** to execute all 31 logical test assertions.
+3. Click **Run All Tests** to execute all 37 logical test assertions.
 
 ---
 

@@ -11,6 +11,7 @@
 const Profiler = (() => {
 
   const STORAGE_KEY = 'ecoguide_profile';
+  const MAX_LOG_ENTRIES = 24;
   let _cachedProfile = null;
 
   /** @typedef {'cost_saver'|'climate_champion'|'convenience_first'|'eco_beginner'} EcoPersona */
@@ -201,8 +202,8 @@ const Profiler = (() => {
       topCategory: snapshot.topCategory,
       recordedAt: new Date().toISOString(),
     });
-    // Keep last 24 months
-    if (profile.progressLog.length > 24) profile.progressLog.shift();
+    // Keep last 24 entries
+    if (profile.progressLog.length > MAX_LOG_ENTRIES) profile.progressLog.shift();
     profile.sessionsCount = (profile.sessionsCount || 0) + 1;
     saveProfile(profile);
   }

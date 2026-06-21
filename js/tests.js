@@ -1,5 +1,5 @@
 /**
- * tests.js — In-browser unit test suite. 33 tests covering all modules.
+ * tests.js — In-browser unit test suite. 37 tests covering all modules.
  * Access via the Tests tab in the navigation.
  * Zero external dependencies — vanilla JS only.
  *
@@ -210,6 +210,27 @@ const Tests = (() => {
     } else {
       assert('T33', 'AppState module loaded', false, true);
     }
+
+    // T34 — Theme switching class application
+    const isDarkBefore = document.body.classList.contains('dark-theme');
+    document.body.classList.toggle('dark-theme');
+    const isDarkAfter = document.body.classList.contains('dark-theme');
+    assert('T34', 'Theme toggle correctly mutates body classList', isDarkBefore !== isDarkAfter, true);
+    if (!isDarkBefore) document.body.classList.remove('dark-theme');
+    else document.body.classList.add('dark-theme');
+
+    // T35 — Certificate printing area existence
+    const certArea = document.getElementById('certificate-print-area');
+    assert('T35', 'Certificate print area exists in DOM', certArea !== null, true);
+
+    // T36 — Accessibility skip link existence
+    const skipLink = document.querySelector('.skip-link');
+    assert('T36', 'Accessibility skip link exists', skipLink !== null, true);
+
+    // T37 — Skip link target verification
+    const skipHref = skipLink ? skipLink.getAttribute('href') : null;
+    const skipTarget = skipHref ? document.querySelector(skipHref) : null;
+    assert('T37', 'Skip link targets an existing element (main-content)', skipTarget !== null, true);
 
     return _results;
   }

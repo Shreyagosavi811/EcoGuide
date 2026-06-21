@@ -113,10 +113,10 @@ const Planning = (() => {
    * Returns a motivational footnote for each week.
    * @param {number} weekNum
    * @param {string} goal
-   * @param {string} persona
+   * @param {string} _persona
    * @returns {string}
    */
-  function _motivationNote(weekNum, goal, persona) {
+  function _motivationNote(weekNum, _goal, _persona) {
     const notes = [
       'Start small — consistency beats perfection.',
       'You\'re building habits that compound over time.',

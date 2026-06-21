@@ -133,27 +133,27 @@
             <h2 class="persona-title">💡 Quick Persona Selector</h2>
             <p class="persona-subtitle">Skip onboarding by instantly loading a pre-configured carbon profile.</p>
             <div class="persona-grid" role="group" aria-label="Persona Selector">
-              <button class="persona-card" onclick="loadPersonaProfile('champion')" aria-label="Climate Champion Persona">
+              <button class="persona-card" data-persona="champion" aria-label="Climate Champion Persona">
                 <span class="persona-icon">🏆</span>
                 <span class="persona-name">Climate Champion</span>
                 <span class="persona-desc">Low transport, vegan, highly efficient home</span>
               </button>
-              <button class="persona-card" onclick="loadPersonaProfile('average_india')" aria-label="Average Indian Household Persona">
+              <button class="persona-card" data-persona="average_india" aria-label="Average Indian Household Persona">
                 <span class="persona-icon">🇮🇳</span>
                 <span class="persona-name">Average Indian</span>
                 <span class="persona-desc">Standard grid electricity, mixed diet, moderate travel</span>
               </button>
-              <button class="persona-card" onclick="loadPersonaProfile('student')" aria-label="Student in Hostel Persona">
+              <button class="persona-card" data-persona="student" aria-label="Student in Hostel Persona">
                 <span class="persona-icon">🎒</span>
                 <span class="persona-name">Hostel Student</span>
                 <span class="persona-desc">Minimal energy, public transit, low shopping</span>
               </button>
-              <button class="persona-card" onclick="loadPersonaProfile('traveler')" aria-label="Frequent Traveler Persona">
+              <button class="persona-card" data-persona="traveler" aria-label="Frequent Traveler Persona">
                 <span class="persona-icon">✈️</span>
                 <span class="persona-name">Frequent Traveler</span>
                 <span class="persona-desc">High travel, meat heavy, large shopping footprint</span>
               </button>
-              <button class="persona-card" onclick="loadPersonaProfile('beginner')" aria-label="Eco Beginner Persona">
+              <button class="persona-card" data-persona="beginner" aria-label="Eco Beginner Persona">
                 <span class="persona-icon">🌱</span>
                 <span class="persona-name">Eco Beginner</span>
                 <span class="persona-desc">High electricity, car commuter, meat eater</span>
@@ -164,7 +164,7 @@
       </div>
 
       <!-- Chat Onboarding Container (Shown when chat starts) -->
-      <div class="conversation-container" id="conversation-chat-container" style="display: none;">
+      <div class="conversation-container" id="conversation-chat-container" hidden>
         <!-- Header -->
         <header class="conversation-header">
           <div class="assistant-avatar" aria-hidden="true">🌿</div>
@@ -174,7 +174,7 @@
           </div>
           <button class="conv-restart-btn" id="conv-restart-btn"
                   aria-label="Restart conversation" title="Restart"
-                  style="display:none">
+                  hidden>
             ↺ Restart
           </button>
         </header>

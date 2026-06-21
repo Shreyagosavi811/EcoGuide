@@ -167,32 +167,14 @@ const Achievements = (() => {
       container.id = 'achievement-toast-container';
       container.setAttribute('aria-live', 'assertive');
       container.setAttribute('role', 'alert');
-      container.style.position = 'fixed';
-      container.style.bottom = '24px';
-      container.style.right = '24px';
-      container.style.zIndex = '9999';
-      container.style.display = 'flex';
-      container.style.flexDirection = 'column';
-      container.style.gap = '10px';
       document.body.appendChild(container);
     }
 
     const toast = document.createElement('div');
     toast.className = 'achievement-toast';
-    toast.style.background = '#2EA043';
-    toast.style.color = '#FFFFFF';
-    toast.style.padding = '16px';
-    toast.style.borderRadius = '8px';
-    toast.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-    toast.style.display = 'flex';
-    toast.style.alignItems = 'center';
-    toast.style.gap = '12px';
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(20px)';
-    toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
 
     const icon = document.createElement('span');
-    icon.style.fontSize = '24px';
+    icon.style.fontSize = '24px'; // Inline font size is fine, but let's keep it clean
     icon.textContent = item.title.split(' ')[0] || '🏆';
 
     const textWrap = document.createElement('div');
@@ -209,16 +191,14 @@ const Achievements = (() => {
     toast.appendChild(textWrap);
     container.appendChild(toast);
 
-    // Animate in
+    // Animate in using class
     setTimeout(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateY(0)';
+      toast.classList.add('show');
     }, 50);
 
     // Animate out
     setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(20px)';
+      toast.classList.remove('show');
       setTimeout(() => toast.remove(), 300);
     }, 4000);
   }

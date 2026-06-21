@@ -369,6 +369,7 @@ const Analytics = (() => {
     container.appendChild(grid);
   }
 
+  // Intentional module-local copy — modules are IIFEs with no shared scope
   function _capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
   function _goalLabel(goal) {

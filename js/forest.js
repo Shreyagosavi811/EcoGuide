@@ -9,6 +9,7 @@
 
 const Forest = (() => {
   const CO2_PER_TREE_KG = 22;
+  const MAX_DISPLAY_TREES = 100;
 
   /**
    * Renders the Virtual Forest in the given element container.
@@ -48,7 +49,7 @@ const Forest = (() => {
       grid.appendChild(emptyState);
     } else {
       // Limit displayed trees if it's very large, but keep the count accurate in text
-      const maxDisplayTrees = Math.min(treesCount, 100);
+      const maxDisplayTrees = Math.min(treesCount, MAX_DISPLAY_TREES);
       for (let i = 0; i < maxDisplayTrees; i++) {
         const tree = document.createElement('span');
         tree.className = 'forest-tree';
@@ -57,10 +58,10 @@ const Forest = (() => {
         grid.appendChild(tree);
       }
 
-      if (treesCount > 100) {
+      if (treesCount > MAX_DISPLAY_TREES) {
         const extraText = document.createElement('span');
         extraText.className = 'forest-extra-text';
-        extraText.textContent = `+ ${treesCount - 100} more trees`;
+        extraText.textContent = `+ ${treesCount - MAX_DISPLAY_TREES} more trees`;
         grid.appendChild(extraText);
       }
     }
@@ -68,5 +69,5 @@ const Forest = (() => {
     container.appendChild(grid);
   }
 
-  return { renderForest };
+  return Object.freeze({ renderForest });
 })();
