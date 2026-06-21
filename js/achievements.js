@@ -15,6 +15,7 @@ const Achievements = (() => {
       id: 'first_assessment',
       title: '🌱 First Step',
       desc: 'Complete your first carbon footprint assessment.',
+      tier: 'common',
       unlocked: false,
       unlockedAt: null
     },
@@ -22,6 +23,7 @@ const Achievements = (() => {
       id: 'eco_starter',
       title: '🌿 Eco Explorer',
       desc: 'Interact with the What-If Simulator to explore changes.',
+      tier: 'common',
       unlocked: false,
       unlockedAt: null
     },
@@ -29,6 +31,7 @@ const Achievements = (() => {
       id: 'carbon_reducer',
       title: '🌳 Carbon Reducer',
       desc: 'Target at least 100 kg of annual CO₂ savings.',
+      tier: 'rare',
       unlocked: false,
       unlockedAt: null
     },
@@ -36,6 +39,7 @@ const Achievements = (() => {
       id: 'climate_champion',
       title: '🏆 Climate Champion',
       desc: 'Target over 500 kg of annual CO₂ savings.',
+      tier: 'legendary',
       unlocked: false,
       unlockedAt: null
     },
@@ -43,6 +47,47 @@ const Achievements = (() => {
       id: 'sustainability_master',
       title: '🎯 Action Planner',
       desc: 'Accept at least 3 sustainability recommendations.',
+      tier: 'rare',
+      unlocked: false,
+      unlockedAt: null
+    },
+    {
+      id: 'green_diet',
+      title: '🥗 Plant Power',
+      desc: 'Select a vegetarian or vegan diet profile.',
+      tier: 'common',
+      unlocked: false,
+      unlockedAt: null
+    },
+    {
+      id: 'clean_energy',
+      title: '☀️ Solarian',
+      desc: 'Limit monthly electricity usage below 80 kWh.',
+      tier: 'rare',
+      unlocked: false,
+      unlockedAt: null
+    },
+    {
+      id: 'commute_hero',
+      title: '🚲 Eco Commuter',
+      desc: 'Commute by walking, cycling, or public transit.',
+      tier: 'common',
+      unlocked: false,
+      unlockedAt: null
+    },
+    {
+      id: 'smart_shopper',
+      title: '🛒 Conscious Buyer',
+      desc: 'Limit shopping purchases to minimize consumption footprint.',
+      tier: 'common',
+      unlocked: false,
+      unlockedAt: null
+    },
+    {
+      id: 'forest_grower',
+      title: '🌲 Forest Builder',
+      desc: 'Save enough carbon to grow 10 or more trees.',
+      tier: 'legendary',
       unlocked: false,
       unlockedAt: null
     }

@@ -49,8 +49,122 @@
 
     <!-- ── CONVERSATION VIEW ─────────────────────────────────────── -->
     <section id="view-conversation" class="view active" aria-label="EcoGuide Conversation Assistant">
-      <div class="conversation-container">
+      <!-- Landing View before conversation starts -->
+      <div id="conversation-landing" class="landing-container">
+        <!-- Hero Section -->
+        <header class="hero-section">
+          <div class="hero-logo" aria-hidden="true">🌍</div>
+          <h1 class="hero-title">EcoGuide</h1>
+          <span class="hero-tagline">Your Adaptive Carbon Assistant</span>
+          <p class="hero-subtitle">
+            Calculate, visualize, and reduce your carbon footprint through personalized recommendations and real-world sustainability insights.
+          </p>
+          <div class="feature-chips" role="list" aria-label="EcoGuide key features">
+            <span class="chip" role="listitem">✓ Offline First</span>
+            <span class="chip" role="listitem">✓ Installable PWA</span>
+            <span class="chip" role="listitem">✓ Privacy First</span>
+            <span class="chip" role="listitem">✓ WCAG Accessible</span>
+            <span class="chip" role="listitem">✓ 31 Automated Tests</span>
+          </div>
+          <div class="hero-actions">
+            <button id="hero-start-btn" class="btn-primary btn-hero">Start Assessment</button>
+            <button id="hero-demo-btn" class="btn-secondary btn-hero">Run Demo</button>
+            <button id="hero-install-btn" class="btn-accept btn-hero" style="display: none;">Install App</button>
+          </div>
+        </header>
 
+        <!-- Immediate Visual Proof Cards -->
+        <section class="landing-preview-section" aria-label="Outcomes preview">
+          <h2 class="section-heading">Immediate Outcome Preview</h2>
+          <p class="section-subheading">Here is what you will achieve after complete assessment:</p>
+          <div class="preview-cards-grid">
+            <div class="preview-card blurred-proof">
+              <span class="preview-card-icon" aria-hidden="true">🌿</span>
+              <h3 class="preview-card-label">Sample EcoScore</h3>
+              <div class="preview-card-value">85 <span class="preview-card-unit">/ 100</span></div>
+            </div>
+            <div class="preview-card blurred-proof">
+              <span class="preview-card-icon" aria-hidden="true">🌍</span>
+              <h3 class="preview-card-label">Sample CO₂ Savings</h3>
+              <div class="preview-card-value">420 <span class="preview-card-unit">kg/year</span></div>
+            </div>
+            <div class="preview-card blurred-proof">
+              <span class="preview-card-icon" aria-hidden="true">₹</span>
+              <h3 class="preview-card-label">Sample Cost Savings</h3>
+              <div class="preview-card-value">₹8,500 <span class="preview-card-unit">/ year</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Virtual Forest Promotion Section -->
+        <section class="landing-forest-section" aria-label="Virtual Forest Visualizer preview">
+          <div class="forest-promo-card">
+            <div class="forest-promo-info">
+              <h2 class="forest-promo-title">🌳 Virtual Forest Visualizer</h2>
+              <p class="forest-promo-desc">
+                Every 22 kg of CO₂ saved grows one tree. Watch your savings transform into a flourishing digital woodland.
+              </p>
+              <button id="forest-promo-cta" class="btn-secondary">View My Forest</button>
+            </div>
+            <div class="forest-promo-grid" id="forest-preview-grid">
+              <div class="forest-tree-anim">🌳</div>
+              <div class="forest-tree-anim">🌲</div>
+              <div class="forest-tree-anim">🌳</div>
+              <div class="forest-tree-anim">🌲</div>
+              <div class="forest-tree-anim">🌳</div>
+              <div class="forest-tree-anim">🌲</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Demo Mode & Persona Selector Grid -->
+        <div class="landing-grid-two-col">
+          <!-- Demo Mode Card -->
+          <div class="card demo-card-highlight">
+            <h2 class="demo-card-title">⚡ Judge Demo Mode</h2>
+            <p class="demo-card-text">
+              Pressed for time? Complete a full assessment automatically in under 30 seconds to preview all dashboards, recommendations, and certificates.
+            </p>
+            <button id="landing-run-demo-btn" class="btn-primary btn-demo-landing">Run Demo Assessment</button>
+          </div>
+
+          <!-- Persona Selector Card -->
+          <div class="card persona-selector-card-landing">
+            <h2 class="persona-title">💡 Quick Persona Selector</h2>
+            <p class="persona-subtitle">Skip onboarding by instantly loading a pre-configured carbon profile.</p>
+            <div class="persona-grid" role="group" aria-label="Persona Selector">
+              <button class="persona-card" onclick="loadPersonaProfile('champion')" aria-label="Climate Champion Persona">
+                <span class="persona-icon">🏆</span>
+                <span class="persona-name">Climate Champion</span>
+                <span class="persona-desc">Low transport, vegan, highly efficient home</span>
+              </button>
+              <button class="persona-card" onclick="loadPersonaProfile('average_india')" aria-label="Average Indian Household Persona">
+                <span class="persona-icon">🇮🇳</span>
+                <span class="persona-name">Average Indian</span>
+                <span class="persona-desc">Standard grid electricity, mixed diet, moderate travel</span>
+              </button>
+              <button class="persona-card" onclick="loadPersonaProfile('student')" aria-label="Student in Hostel Persona">
+                <span class="persona-icon">🎒</span>
+                <span class="persona-name">Hostel Student</span>
+                <span class="persona-desc">Minimal energy, public transit, low shopping</span>
+              </button>
+              <button class="persona-card" onclick="loadPersonaProfile('traveler')" aria-label="Frequent Traveler Persona">
+                <span class="persona-icon">✈️</span>
+                <span class="persona-name">Frequent Traveler</span>
+                <span class="persona-desc">High travel, meat heavy, large shopping footprint</span>
+              </button>
+              <button class="persona-card" onclick="loadPersonaProfile('beginner')" aria-label="Eco Beginner Persona">
+                <span class="persona-icon">🌱</span>
+                <span class="persona-name">Eco Beginner</span>
+                <span class="persona-desc">High electricity, car commuter, meat eater</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Onboarding Container (Shown when chat starts) -->
+      <div class="conversation-container" id="conversation-chat-container" style="display: none;">
         <!-- Header -->
         <header class="conversation-header">
           <div class="assistant-avatar" aria-hidden="true">🌿</div>
@@ -88,46 +202,6 @@
         <div class="conversation-input-area"
              id="conversation-input-area"
              aria-label="Response options">
-        </div>
-
-      </div>
-      <!-- Demo Mode & Persona Selector Sidebar -->
-      <div class="demo-persona-container">
-        <div class="demo-controls-card">
-          <button id="run-demo-btn" class="btn-demo" aria-label="Run Demo Assessment">
-            🎬 Run Demo Assessment
-          </button>
-        </div>
-        <div class="persona-selector-card">
-          <h2 class="persona-title">💡 Quick Persona Selector</h2>
-          <p class="persona-subtitle">Skip onboarding by instantly loading a pre-configured carbon profile.</p>
-          <div class="persona-grid" role="group" aria-label="Persona Selector">
-            <button class="persona-card" onclick="loadPersonaProfile('champion')" aria-label="Climate Champion Persona">
-              <span class="persona-icon">🏆</span>
-              <span class="persona-name">Climate Champion</span>
-              <span class="persona-desc">Low transport, vegan, highly efficient home</span>
-            </button>
-            <button class="persona-card" onclick="loadPersonaProfile('average_india')" aria-label="Average Indian Household Persona">
-              <span class="persona-icon">🇮🇳</span>
-              <span class="persona-name">Average Indian</span>
-              <span class="persona-desc">Standard grid electricity, mixed diet, moderate travel</span>
-            </button>
-            <button class="persona-card" onclick="loadPersonaProfile('student')" aria-label="Student in Hostel Persona">
-              <span class="persona-icon">🎒</span>
-              <span class="persona-name">Hostel Student</span>
-              <span class="persona-desc">Minimal energy, public transit, low shopping</span>
-            </button>
-            <button class="persona-card" onclick="loadPersonaProfile('traveler')" aria-label="Frequent Traveler Persona">
-              <span class="persona-icon">✈️</span>
-              <span class="persona-name">Frequent Traveler</span>
-              <span class="persona-desc">High travel, meat heavy, large shopping footprint</span>
-            </button>
-            <button class="persona-card" onclick="loadPersonaProfile('beginner')" aria-label="Eco Beginner Persona">
-              <span class="persona-icon">🌱</span>
-              <span class="persona-name">Eco Beginner</span>
-              <span class="persona-desc">High electricity, car commuter, meat eater</span>
-            </button>
-          </div>
         </div>
       </div>
     </section>
@@ -272,7 +346,13 @@
         <div id="history-data">
           <!-- Achievements Card -->
           <div class="card badge-card" role="region" aria-label="Achievements Gallery">
-            <h3 class="card-title">🏆 Your Achievements</h3>
+            <div class="achievements-progress-header">
+              <h3 class="card-title" style="margin-bottom: 0;">🏆 Achievements</h3>
+              <span id="achievements-progress-text" class="ach-progress-text" aria-live="polite">0 / 10 unlocked</span>
+            </div>
+            <div class="achievements-progress-bar-wrap">
+              <div id="achievements-progress-bar-fill" class="ach-progress-bar-fill"></div>
+            </div>
             <div id="achievements-gallery" class="badge-gallery" role="list" aria-label="Achievements Gallery"></div>
           </div>
 

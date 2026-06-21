@@ -23,7 +23,8 @@ const AppState = (() => {
       dashboard:       true,
       recommendations: true,
       planner:         true,
-      history:         true
+      history:         true,
+      simulator:       true
     }
   };
 
@@ -35,6 +36,18 @@ const AppState = (() => {
    * Navigates to a named view.
    * @param {string} viewName
    */
+  function showOnboardingLanding() {
+    _show('conversation-landing');
+    const chatContainer = document.getElementById('conversation-chat-container');
+    if (chatContainer) chatContainer.style.display = 'none';
+  }
+
+  function showChatContainer() {
+    _hide('conversation-landing');
+    const chatContainer = document.getElementById('conversation-chat-container');
+    if (chatContainer) chatContainer.style.display = 'flex';
+  }
+
   function navigateTo(viewName) {
     if (!VIEWS.includes(viewName)) return;
 
@@ -54,6 +67,14 @@ const AppState = (() => {
     });
 
     state.currentView = viewName;
+
+    if (viewName === 'conversation') {
+      if (state.userData) {
+        showChatContainer();
+      } else {
+        showOnboardingLanding();
+      }
+    }
 
     // Lazy-render views when first visited or when dirty
     if (state.breakdown) {
@@ -129,6 +150,7 @@ const AppState = (() => {
     state.dirty.recommendations = true;
     state.dirty.planner         = true;
     state.dirty.history         = true;
+    state.dirty.simulator       = true;
 
     // Gamification: Unlock assessments achievement
     if (typeof Achievements !== 'undefined') {
@@ -139,6 +161,25 @@ const AppState = (() => {
         Achievements.unlock('climate_champion');
       } else if (totals.co2 >= 100) {
         Achievements.unlock('carbon_reducer');
+      }
+
+      // Unlock new micro achievements
+      if (userData.diet === 'vegetarian' || userData.diet === 'vegan') {
+        Achievements.unlock('green_diet');
+      }
+      if (userData.energy.electricity_kwh <= 80) {
+        Achievements.unlock('clean_energy');
+      }
+      if (userData.transport.mode === 'walk_cycle' || userData.transport.mode === 'public_transit') {
+        Achievements.unlock('commute_hero');
+      }
+      if (userData.shopping.clothing_per_month <= 1 && userData.shopping.electronics_per_year <= 1) {
+        Achievements.unlock('smart_shopper');
+      }
+      const acceptedRecs = (state.recommendations || []).filter(r => r.accepted);
+      const totalSaved = acceptedRecs.reduce((sum, r) => sum + r.co2Saving, 0);
+      if (totalSaved / 22 >= 10) {
+        Achievements.unlock('forest_grower');
       }
     }
 
@@ -367,6 +408,7 @@ const AppState = (() => {
       });
 
       rejectBtn.addEventListener('click', () => {
+        rec.rejected = true;
         Profiler.recordReject(rec);
         card.classList.add('dismissed');
         card.setAttribute('aria-hidden', 'true');
@@ -423,7 +465,10 @@ const AppState = (() => {
       weekHeader.appendChild(weekSavings);
       card.appendChild(weekHeader);
 
-      if (week.actions.length === 0) {
+       // Filter out rejected actions dynamically
+      const visibleActions = week.actions.filter(action => !action.rejected);
+
+      if (visibleActions.length === 0) {
         const empty = document.createElement('p');
         empty.className   = 'week-empty';
         empty.textContent = 'Sustain the habits you\'ve built in previous weeks.';
@@ -431,14 +476,21 @@ const AppState = (() => {
       } else {
         const ul = document.createElement('ul');
         ul.className = 'action-list';
-        week.actions.forEach(action => {
+        visibleActions.forEach(action => {
           const li = document.createElement('li');
-          li.className = 'action-item';
+          li.className = `action-item ${action.accepted ? 'completed' : ''}`;
+          
           const icon = document.createElement('span');
           icon.className   = 'action-icon';
-          icon.textContent = action.difficulty === 'easy' ? '🟢' : action.difficulty === 'medium' ? '🟡' : '🔴';
+          icon.textContent = action.accepted ? '✅' : (action.difficulty === 'easy' ? '🟢' : action.difficulty === 'medium' ? '🟡' : '🔴');
+          
           const text = document.createElement('span');
           text.textContent = action.title;
+          if (action.accepted) {
+            text.style.textDecoration = 'line-through';
+            text.style.opacity = '0.6';
+          }
+          
           li.appendChild(icon);
           li.appendChild(text);
           ul.appendChild(li);
@@ -470,7 +522,10 @@ const AppState = (() => {
     if (!state.userData || !state.breakdown) return;
     _show('sim-data');
     _hide('sim-no-data');
-    Simulator.init(state.userData, state.breakdown);
+    if (state.dirty.simulator) {
+      Simulator.init(state.userData, state.breakdown);
+      state.dirty.simulator = false;
+    }
   }
 
   function _renderHistory() {
@@ -479,14 +534,23 @@ const AppState = (() => {
     // Render Achievements Gallery
     if (typeof Achievements !== 'undefined') {
       const list = Achievements.load();
+      const totalCount = list.length;
+      const unlockedCount = list.filter(a => a.unlocked).length;
+
+      const progressText = document.getElementById('achievements-progress-text');
+      if (progressText) progressText.textContent = `${unlockedCount} / ${totalCount} unlocked`;
+      const progressFill = document.getElementById('achievements-progress-bar-fill');
+      if (progressFill) progressFill.style.width = `${(unlockedCount / totalCount) * 100}%`;
+
       const galleryEl = document.getElementById('achievements-gallery');
       if (galleryEl) {
         galleryEl.innerHTML = '';
         list.forEach(ach => {
           const card = document.createElement('div');
-          card.className = `badge-card-item ${ach.unlocked ? 'unlocked' : 'locked'}`;
+          const tierClass = ach.tier || 'common';
+          card.className = `badge-card-item ${ach.unlocked ? 'unlocked' : 'locked'} tier-${tierClass}`;
           card.setAttribute('role', 'listitem');
-          card.setAttribute('aria-label', `${ach.title}: ${ach.desc}. ${ach.unlocked ? 'Unlocked' : 'Locked'}`);
+          card.setAttribute('aria-label', `${ach.title} (${tierClass} tier): ${ach.desc}. ${ach.unlocked ? 'Unlocked' : 'Locked'}`);
 
           const icon = document.createElement('div');
           icon.className = 'badge-icon';
@@ -496,12 +560,17 @@ const AppState = (() => {
           name.className = 'badge-name';
           name.textContent = ach.title.slice(ach.title.indexOf(' ') + 1);
 
+          const tierLabel = document.createElement('span');
+          tierLabel.className = `badge-tier-label tier-text-${tierClass}`;
+          tierLabel.textContent = tierClass.toUpperCase();
+
           const desc = document.createElement('div');
           desc.className = 'badge-desc';
           desc.textContent = ach.desc;
 
           card.appendChild(icon);
           card.appendChild(name);
+          card.appendChild(tierLabel);
           card.appendChild(desc);
           galleryEl.appendChild(card);
         });
@@ -668,6 +737,7 @@ const AppState = (() => {
     state.dirty.recommendations = true;
     state.dirty.planner         = true;
     state.dirty.history         = true;
+    state.dirty.simulator       = true;
 
     // Gamification: Unlock achievements
     if (typeof Achievements !== 'undefined') {
@@ -722,6 +792,8 @@ const AppState = (() => {
 
     _hide('sim-data');
     _show('sim-no-data');
+
+    showOnboardingLanding();
   }
 
   // ── INITIALISATION ──────────────────────────────────────────────────────────
@@ -768,6 +840,7 @@ const AppState = (() => {
     // Handle beforeinstallprompt flow
     let deferredPrompt = null;
     const installBtn = document.getElementById('install-app-btn');
+    const heroInstallBtn = document.getElementById('hero-install-btn');
 
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault();
@@ -776,25 +849,41 @@ const AppState = (() => {
         installBtn.removeAttribute('hidden');
         installBtn.style.display = 'inline-block';
       }
+      if (heroInstallBtn) {
+        heroInstallBtn.style.display = 'inline-block';
+      }
     });
 
-    if (installBtn) {
-      installBtn.addEventListener('click', () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then(() => {
-            deferredPrompt = null;
+    function triggerInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+          if (installBtn) {
             installBtn.setAttribute('hidden', '');
             installBtn.style.display = 'none';
-          });
-        }
-      });
+          }
+          if (heroInstallBtn) {
+            heroInstallBtn.style.display = 'none';
+          }
+        });
+      }
+    }
+
+    if (installBtn) {
+      installBtn.addEventListener('click', triggerInstall);
+    }
+    if (heroInstallBtn) {
+      heroInstallBtn.addEventListener('click', triggerInstall);
     }
 
     window.addEventListener('appinstalled', () => {
       if (installBtn) {
         installBtn.setAttribute('hidden', '');
         installBtn.style.display = 'none';
+      }
+      if (heroInstallBtn) {
+        heroInstallBtn.style.display = 'none';
       }
     });
 
@@ -822,7 +911,45 @@ const AppState = (() => {
     const demoBtn = document.getElementById('run-demo-btn');
     if (demoBtn) {
       demoBtn.addEventListener('click', () => {
+        showChatContainer();
         Conversation.runDemo();
+      });
+    }
+
+    // Hero Section buttons
+    const heroStartBtn = document.getElementById('hero-start-btn');
+    if (heroStartBtn) {
+      heroStartBtn.addEventListener('click', () => {
+        showChatContainer();
+        Conversation.start();
+      });
+    }
+
+    const heroDemoBtn = document.getElementById('hero-demo-btn');
+    if (heroDemoBtn) {
+      heroDemoBtn.addEventListener('click', () => {
+        showChatContainer();
+        Conversation.runDemo();
+      });
+    }
+
+    const landingRunDemoBtn = document.getElementById('landing-run-demo-btn');
+    if (landingRunDemoBtn) {
+      landingRunDemoBtn.addEventListener('click', () => {
+        showChatContainer();
+        Conversation.runDemo();
+      });
+    }
+
+    const forestPromoCta = document.getElementById('forest-promo-cta');
+    if (forestPromoCta) {
+      forestPromoCta.addEventListener('click', () => {
+        navigateTo('dashboard');
+        // Scroll to forest section
+        const forestDashboard = document.getElementById('virtual-forest-dashboard');
+        if (forestDashboard) {
+          forestDashboard.scrollIntoView({ behavior: 'smooth' });
+        }
       });
     }
 
